@@ -530,9 +530,8 @@ GitHub: [@jurjsorinliviu](https://github.com/jurjsorinliviu)
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
-
-- Original Ψ-NN framework by Liu et al. (Nature Communications, 2025)
-- PSI-HDL framework development
+- Ψ-HDL Framework: [PSI-HDL GitHub](https://github.com/jurjsorinliviu/PSI-HDL)
+- Original Ψ-NN: [Psi-NN GitHub](https://github.com/ZitiLiu/Psi-NN)
 
 ---
 
