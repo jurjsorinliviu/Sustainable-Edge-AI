@@ -522,7 +522,6 @@ We welcome contributions! Areas of interest:
 ## 📞 Contact
 
 **Sorin Liviu Jurj**  
-Politehnica University of Timisoara, Romania  
 Email: jurjsorinliviu@yahoo.de  
 GitHub: [@jurjsorinliviu](https://github.com/jurjsorinliviu)
 
