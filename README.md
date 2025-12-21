@@ -13,7 +13,7 @@
 This repository contains the complete implementation and experimental validation for our framework that couples **physics structure-informed learning** with **renewable energy constraints** to address three critical challenges in Edge AI deployment:
 
 1. **Hardware Over-specification**: Eliminates the "*Bill-of-Materials Bomb*" causing up to 31× cost penalties
-2. **Carbon Footprint**: Achieves 14× reduction in lifecycle emissions through solar-constrained training
+2. **Carbon Footprint**: Achieves ~18× reduction in lifecycle emissions through solar-constrained training
 3. **Deployment Optimization**: Automatically extracts hardware requirements before prototyping
 
 ### Key Results
@@ -21,7 +21,7 @@ This repository contains the complete implementation and experimental validation
 | Metric                 | Improvement                                     |
 | ---------------------- | ----------------------------------------------- |
 | **Cost Savings**       | 96.8% (from $249 Jetson Orin Nano → $8 STM32H7) |
-| **Carbon Reduction**   | 14× lifecycle emissions (238 kg → 17.6 kg CO₂)  |
+| **Carbon Reduction**   | ~18× lifecycle emissions (238 kg → 13.3 kg CO₂) |
 | **Training Energy**    | 50% reduction via solar constraints             |
 | **Performance Impact** | <6% degradation for suitable problem classes    |
 
@@ -41,7 +41,7 @@ Automatically computes from discovered neural network structures:
 Novel training approach using 50% duty cycle renewable energy:
 
 - **Checkpoint Mechanism**: Preserves Adam optimizer momentum across power interruptions
-- **Passive Regime (κ=0)**: Universally outperforms adaptive regularization
+- **Passive Regime (κ=0)**: Outperforms adaptive regularization (in this study)
 - **Problem Classification**: Predicts method applicability before deployment
 
 ### 2.1 Solar Model Validation
@@ -57,6 +57,7 @@ The Markov solar model (Equations 50-51 in the paper) has been validated against
 **Key Finding**: The Markov model achieves excellent agreement (Δ=11%) when panels are sized according to standard engineering practice for local solar conditions. The 50% duty cycle is achievable at any latitude with appropriate system design.
 
 To run the validation:
+
 ```bash
 # Default (2m² panel - will fail)
 python experiments/pvgis_solar_validation.py --epochs 3000 --seeds 3
@@ -69,13 +70,14 @@ python experiments/pvgis_solar_validation.py --epochs 3000 --seeds 3 --panel-are
 
 The manuscript uses 250W as a conservative estimate for RTX 4090 power consumption during training. Empirical measurement shows actual consumption is significantly lower:
 
-| Configuration | Mean Power | Max Power | Min Power | Manuscript Claim | Discrepancy |
-|---------------|------------|-----------|-----------|------------------|-------------|
-| 4×50 neurons, 1000 collocation points, 6000 epochs | **57W** | 92W | 50W | 250W | **77% lower** |
+| Configuration                                      | Mean Power | Max Power | Min Power | Manuscript Claim | Discrepancy   |
+| -------------------------------------------------- | ---------- | --------- | --------- | ---------------- | ------------- |
+| 4×50 neurons, 1000 collocation points, 6000 epochs | **57W**    | 92W       | 50W       | 250W             | **77% lower** |
 
 **Key Finding**: PINN training is a lightweight workload compared to gaming (200-420W) or stress tests (450-550W). The 250W assumption is conservative, meaning solar feasibility is more readily achievable than presented.
 
 To run the GPU power measurement:
+
 ```bash
 # Quick test (500 epochs)
 python experiments/measure_gpu_power.py
@@ -103,27 +105,27 @@ python experiments/measure_gpu_power.py --manuscript
 
 ## 🏗️ Repository Structure
 
-```
+```text
 ├── requirements.txt                # Python dependencies
 ├── run_all_experiments.py          # Master experiment runner
-├── sustainable_edge_ai.py      # Main implementation
+├── sustainable_edge_ai.py          # Main implementation
 ├── generate_figure1_timeline.py
 ├── generate_figure4_realistic_solar.py
 ├── run_all_chapter4_experiments.py
 │
-├── experiments/                # Individual problem experiments
+├── experiments/                    # Individual problem experiments
 │   ├── burgers_solar_experiment.py
 │   ├── duty_cycle_sweep.py
 │   ├── export_results.py
 │   ├── heat_wave_debug.py
 │   ├── kappa_sweep_experiment.py
-│   ├── pvgis_solar_validation.py  # Markov model validation
-│   ├── measure_gpu_power.py       # GPU power measurement
+│   ├── pvgis_solar_validation.py   # Markov model validation
+│   ├── measure_gpu_power.py        # GPU power measurement
 │   ├── realistic_solar_validation.py
 │   ├── statistical_validation.py
 │   ├── three_regime_advection_experiment.py
 │
-├── PSI-HDL-implementation/          # Base Ψ-HDL framework
+├── PSI-HDL-implementation/         # Base Ψ-HDL framework
 │   ├── Code/
 │   │   ├── structure_extractor.py  # Hierarchical clustering
 │   │   ├── verilog_generator.py    # HDL code generation
@@ -136,35 +138,27 @@ python experiments/measure_gpu_power.py --manuscript
 │       │   └── Training.py
 │       └── Config/                 # Experiment configurations
 │
-├── results/                    # Experimental outputs
-│       ├── figure1_three_regime_timeline.png
-│       ├── figure4_realistic_solar_comparison.png
-│       ├── unified_results.csv
-│       ├── unified_comparison_table.tex
-│       ├── architecture_sensitivity/
-│       ├── burgers/
-│       ├── duty_cycle_sweep/
-│       ├── kappa_sweep_burgers/
-│       ├── long_term_convergence/
-│       ├── memristor/
-│       ├── multi_model/
-│       ├── realistic_solar_burgers/
-│       ├── statistical_validation/
-│       ├── three_regime_burgers/
-│       ├── three_regime_laplace/
-│       ├── three_regime_memristor/
-│       ├── three_regime_burgers/
-│       ├── three_regime_laplace/
-│       ├── three_regime_memristor/
-│       ├── statistical_validation/
-│       ├── architecture_sensitivity/
-│       ├── long_term_convergence/
-│       ├── realistic_solar_burgers/
-│       ├── pvgis_validation/          # Markov model validation results
-│       ├── pvgis_validation_10m2_panel/
-│       ├── pvgis_validation_50pct_duty/
-│       └── gpu_power_measurement/     # GPU power measurements
-│
+├── results/                        # Experimental outputs
+│   ├── figure1_three_regime_timeline.png
+│   ├── figure4_realistic_solar_comparison.png
+│   ├── unified_results.csv
+│   ├── unified_comparison_table.tex
+│   ├── architecture_sensitivity/
+│   ├── burgers/
+│   ├── duty_cycle_sweep/
+│   ├── kappa_sweep_burgers/
+│   ├── long_term_convergence/
+│   ├── memristor/
+│   ├── multi_model/
+│   ├── realistic_solar_burgers/
+│   ├── statistical_validation/
+│   ├── three_regime_burgers/
+│   ├── three_regime_laplace/
+│   ├── three_regime_memristor/
+│   ├── pvgis_validation/           # Markov model validation results
+│   ├── pvgis_validation_10m2_panel/
+│   ├── pvgis_validation_50pct_duty/
+│   └── gpu_power_measurement/      # GPU power measurements
 ```
 
 ## 🚀 Quick Start
@@ -176,12 +170,13 @@ The fastest way to get started is using GitHub Codespaces. Click the button belo
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/jurjsorinliviu/Sustainable-Edge-AI)
 
 **What's included:**
+
 - Python 3.11 with all dependencies pre-installed
 - Jupyter Notebook support
 - VS Code extensions for Python development
 - Ready-to-run experiments
 
-After the Codespace launches (typically 2-3 minutes), you can immediately run:
+After the Codespace launches, you can immediately run:
 
 ```bash
 # Verify setup
@@ -265,16 +260,14 @@ python generate_figure4_realistic_solar.py
 ```python
 from sustainable_edge_ai import SolarConstrainedTrainer
 
-# Initialize trainer
 trainer = SolarConstrainedTrainer(model, config={
-    'duty_cycle': 0.5,           # 50% solar availability
-    'active_period': 10,         # Train for 10 steps
-    'idle_period': 10,           # Idle for 10 steps
-    'checkpoint_frequency': 100, # Save every 100 steps
-    'adaptive_regularization': False  # Use passive regime (κ=0)
+    'duty_cycle': 0.5,                 # 50% solar availability
+    'active_period': 10,               # Train for 10 steps
+    'idle_period': 10,                 # Idle for 10 steps
+    'checkpoint_frequency': 100,       # Save every 100 steps
+    'adaptive_regularization': False   # Passive regime (κ=0)
 })
 
-# Training loop
 for epoch in range(num_epochs):
     loss = trainer.train_step(loss_fn=compute_loss, optimizer=optimizer)
     if trainer.should_checkpoint():
@@ -287,11 +280,9 @@ for epoch in range(num_epochs):
 from sustainable_edge_ai import HardwareSpecificationExtractor
 from structure_extractor import StructureExtractor
 
-# Extract network structure
 struct_extractor = StructureExtractor(model, model_type="PsiNN_burgers")
 hw_extractor = HardwareSpecificationExtractor(model, struct_extractor)
 
-# Compute specifications
 specs = {
     'operations': hw_extractor.compute_operations(),
     'tops': hw_extractor.compute_tops_requirement(target_fps=30.0),
@@ -309,16 +300,13 @@ print(f"Power: {specs['power_mw']:.2f} mW")
 ```python
 from sustainable_edge_ai import EdgeAIPlatformRecommender
 
-# Initialize recommender
 recommender = EdgeAIPlatformRecommender()
 
-# Get platform recommendations
 platforms = recommender.recommend_platform(
     requirements=specs,
     constraints={'max_cost_usd': 100, 'max_power_mw': 10000}
 )
 
-# Display results
 for i, platform in enumerate(platforms[:3], 1):
     print(f"{i}. {platform['name']}: "
           f"${platform['cost']:.2f}, "
@@ -331,19 +319,18 @@ for i, platform in enumerate(platforms[:3], 1):
 ```python
 from sustainable_edge_ai import CarbonFootprintAnalyzer
 
-# Initialize analyzer
 analyzer = CarbonFootprintAnalyzer()
 
-# Compute lifecycle emissions
 carbon = analyzer.compute_lifecycle_carbon(
     platform=platforms[0],
     deployment_years=5.0,
-    training_regime='solar',  # vs 'grid'
+    training_regime='solar',   # vs 'grid'
     duty_cycle=0.5
 )
 
 print(f"Training Carbon: {carbon['training_kg_co2']:.3f} kg CO₂")
 print(f"Deployment Carbon: {carbon['deployment_kg_co2']:.1f} kg CO₂")
+print(f"Embodied Carbon: {carbon['embodied_kg_co2']:.1f} kg CO₂")
 print(f"Total Lifecycle: {carbon['total_kg_co2']:.1f} kg CO₂")
 ```
 
@@ -373,7 +360,7 @@ Wave equation results at learning rate 1×10⁻²:
 | 1.0               | +106.97%    | ❌ Failed           |
 | 2.0               | +140.22%    | ❌ Failed           |
 
-**Key Finding**: Passive regime (κ=0) universally outperforms all active variants.
+**Key Finding**: Passive regime (κ=0) outperforms all active variants (in this study).
 
 ### Platform Recommendation Example (Burgers PDE)
 
@@ -385,12 +372,12 @@ Wave equation results at learning rate 1×10⁻²:
 
 ### Carbon Footprint Comparison (5-year lifecycle)
 
-| Scenario            | Training | Deployment | Total       | Reduction    |
-| ------------------- | -------- | ---------- | ----------- | ------------ |
-| **Solar + STM32H7** | 0.036 kg | 17.6 kg    | **17.6 kg** | **14× less** |
-| Grid + Jetson Orin  | 0.356 kg | 208 kg     | **238 kg**  | Baseline     |
+| Scenario            | Training | Deployment | Embodied | Total       | Reduction     |
+| ------------------- | -------- | ---------- | -------- | ----------- | ------------- |
+| **Solar + STM32H7** | 0.036 kg | 8.3 kg     | 5.0 kg   | **13.3 kg** | **~18× less** |
+| Grid + Jetson Orin  | 0.356 kg | 208 kg     | 30 kg    | **238 kg**  | Baseline      |
 
-At scale (10,000 devices): **2,204 tons CO₂ reduction** = 479 cars removed for 1 year
+At scale (10,000 devices): **~2,247 tons CO₂ reduction** = ~488 cars removed for 1 year
 
 ## 📈 Reproducing Results
 
@@ -406,19 +393,16 @@ results = {'continuous': [], 'passive': [], 'active': []}
 for seed in seeds:
     torch.manual_seed(seed)
     np.random.seed(seed)
-    
-    # Train all three regimes
+
     results['continuous'].append(train_continuous(seed))
     results['passive'].append(train_solar_passive(seed))
     results['active'].append(train_solar_active(seed))
 
-# Compute statistics
 from scipy import stats
 mean_continuous = np.mean(results['continuous'])
 mean_passive = np.mean(results['passive'])
 degradation = 100 * (mean_passive - mean_continuous) / mean_continuous
 
-# Paired t-test
 t_stat, p_value = stats.ttest_rel(results['continuous'], results['passive'])
 cohens_d = (mean_passive - mean_continuous) / np.std(results['continuous'])
 
@@ -435,7 +419,7 @@ print(f"Cohen's d: {cohens_d:.2f}")
 | Statistical validation | 10          | 6000    | ~30 hours  | ~30 hours  |
 | Full Chapter 4         | 60+ configs | Various | ~180 hours | ~7 days    |
 
-**Note**: Solar-constrained training extends wall-clock time by 2× due to 50% duty cycle.
+**Note**: Solar-constrained training extends wall-clock time by ~2× due to 50% duty cycle.
 
 ## 🎓 Citation
 
@@ -444,8 +428,8 @@ If you use this framework in your research, please cite:
 ```bibtex
 @article{jurj2025sustainable,
   author = {Sorin Liviu Jurj},
-  title = {Sustainable Edge AI: Discovering Minimal Hardware Requirements 
-           Through Physics Structure-Informed Learning Under Renewable 
+  title = {Sustainable Edge AI: Discovering Minimal Hardware Requirements
+           Through Physics Structure-Informed Learning Under Renewable
            Energy Constraints},
   journal = {Under Review},
   year = {2025},
@@ -468,12 +452,12 @@ If you use this framework in your research, please cite:
    - Smooth optimization landscapes enable successful intermittent training
 
 2. **Passive Regime (κ=0)**:
-   - Universally outperforms adaptive regularization
+   - Outperforms adaptive regularization (in this study)
    - Simpler deployment (no hyperparameters)
    - Checkpoint momentum preservation provides sufficient regularization
 
 3. **Hardware Specification Extraction**:
-   - Accurate TOPS, memory, and power predictions
+   - Accurate throughput, memory, and power predictions
    - Enables platform selection before prototyping
    - 96.8% cost reduction demonstrated
 
@@ -482,7 +466,7 @@ If you use this framework in your research, please cite:
 1. **Hyperbolic Transport Problems** (Class B):
    - Advection equation: +7200% degradation
    - Wavefront desynchronization fundamental issue
-   - Requires continuous training or >80% duty cycle
+   - Requires continuous training or high duty cycle
 
 2. **Nonlinear Reaction-Diffusion** (Class B):
    - Allen-Cahn equation: +1660% degradation
@@ -518,16 +502,16 @@ The framework supports automatic recommendation from 6 validated platforms:
 ### Single Device (5-year lifecycle)
 
 - **Traditional Approach**: Grid training + Jetson Orin Nano = **238 kg CO₂**
-- **Our Framework**: Solar training + STM32H7 = **17.6 kg CO₂**
-- **Reduction**: 220.4 kg CO₂ (92.6% less)
+- **Our Framework**: Solar training + STM32H7 = **13.3 kg CO₂**
+- **Reduction**: 224.7 kg CO₂ (≈94.4% less)
 
 ### At Scale
 
-| Deployment       | Traditional  | Our Framework | Reduction    | Equivalent                  |
-| ---------------- | ------------ | ------------- | ------------ | --------------------------- |
-| 1,000 devices    | 238 tons     | 17.6 tons     | 220 tons     | 48 cars removed             |
-| 10,000 devices   | 2,380 tons   | 176 tons      | 2,204 tons   | 479 cars / 614 acres forest |
-| 1M devices (IoT) | 238,000 tons | 17,600 tons   | 220,400 tons | 47,900 cars / 61,400 acres  |
+| Deployment       | Traditional  | Our Framework | Reduction    | Equivalent                    |
+| ---------------- | ------------ | ------------- | ------------ | ----------------------------- |
+| 1,000 devices    | 238 tons     | 13.3 tons     | 224.7 tons   | ~49 cars removed              |
+| 10,000 devices   | 2,380 tons   | 133 tons      | 2,247 tons   | ~488 cars / ~624 acres forest |
+| 1M devices (IoT) | 238,000 tons | 13,300 tons   | 224,700 tons | ~48,850 cars / ~62,400 acres  |
 
 **Note**: Equivalencies based on EPA averages (4.6 tons CO₂/car/year, 0.36 tons CO₂/acre/year forest sequestration)
 
@@ -553,6 +537,7 @@ GitHub: [@jurjsorinliviu](https://github.com/jurjsorinliviu)
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
+
 - Ψ-HDL Framework: [PSI-HDL GitHub](https://github.com/jurjsorinliviu/PSI-HDL)
 - Original Ψ-NN: [Psi-NN GitHub](https://github.com/ZitiLiu/Psi-NN)
 
