@@ -6,7 +6,8 @@
 
 > **Author**: Sorin Liviu Jurj   
 > **Status**: Under Review
-><img width="1656" height="2715" alt="Proposed_methodology" src="https://github.com/user-attachments/assets/4f32b1fe-1537-4cd1-959b-beca6603db4a" />
+>![Methodology Pipeline](https://github.com/user-attachments/assets/2cf3e63e-8330-4e11-81c5-714dd599e249)
+
 
 
 ## 📋 Overview
